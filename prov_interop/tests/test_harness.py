@@ -35,7 +35,6 @@ from prov_interop.comparator import Comparator
 from prov_interop.component import ConfigurableComponent
 from prov_interop.component import ConfigError
 from prov_interop.harness import HarnessResources
-from prov_interop.provpy.comparator import ProvPyComparator
 
 class DummyComparator(Comparator):
   """Dummy comparator.
@@ -166,7 +165,7 @@ class HarnessResourcesTestCase(unittest.TestCase):
     for name in ["one", "testtwo", "testcasethree"]:
       os.mkdir(os.path.join(self.test_cases_dir, name))
     # Add file names do match testcaseNNNN
-    for name in ["testcase4", "testcase5"]:
+    for name in ["test-case4", "test-case5"]:
       open(os.path.join(self.test_cases_dir, name), "a").close()
     self.harness.configure(self.config)
     num_test_cases = 0
@@ -219,13 +218,13 @@ class HarnessResourcesTestCase(unittest.TestCase):
                                    str(index))
       for format1 in formats:
         for format2 in formats:
-          self.assertTrue((index, 
-                           format1, 
-                           os.path.join(test_case_dir, "file." + format1),
-                           format2,
-                           os.path.join(test_case_dir, "file." + format2)) 
-                          in test_cases,
-                          str(index) + format1 + format2)
+          expected_test_case = (
+            str(index),
+            format1, os.path.join(test_case_dir, "file." + format1),
+            format2, os.path.join(test_case_dir, "file." + format2)
+          )
+          self.assertIn(expected_test_case, test_cases,
+                        'Test case %s, %s, %s is not found' % (index, format1, format2))
 
   def test_test_cases_generator(self):
     self.config[HarnessResources.COMPARATORS][DummyComparator.__name__] \
